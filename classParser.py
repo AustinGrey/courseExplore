@@ -78,41 +78,59 @@ for i in range(0, len(course_file)):
 		c.execute('SELECT id FROM subjects WHERE code=?', (subject_code,))
 		
 		
-		
 		# scan the sub sections under the subject for course listings,
-		# Each subject is guaranteed to have at least either undergraduate listings, or graduate listings as a section.
+		# Each subject usually has at least either undergraduate listings, or graduate listings as a section.
 		# However, the sections might contain additional notes, department info, and the like
 		# Plan: scan down lines, keep of track if you are in the undergrad or grad section
 		# any non-class lines are added to the notes for that section
 		if (course_file[j].startswith('Undergraduate Courses') or course_file[j].startswith('Cours de 1er cycle')):
 			current_heading = "u_grad"
-		else if (course_file[j].startswith('Graduate Courses') or course_file[j].startswith('Cours de 2e cycle')):
+		elif (course_file[j].startswith('Graduate Courses') or course_file[j].startswith('Cours de 2e cycle')):
 			current_heading = "grad"
+		elif (course_file[j].startswith('#')):
+			# This implies the subject has no courses listed, and we are done with it
+			print("WARN: No courses for subject " + subject_code + ", skipping.")
+			continue
 		else:
-			print("Unhandled initial subject sub-section prefix: " + course_file[j])
+			print("Unhandled initial " + subject_code + " sub-section prefix: " + course_file[j])
 			break
 		j += 1 #this subsection header is handled, move on
 			
 		undergrad_notes = ""
 		grad_notes = ""
 		
-		while not course_file[j].startswith('#'):
+		while (j < len(course_file) and not course_file[j].startswith('#')):
 			line_code = course_file[j][0:len(subject_code)]
 			if line_code != subject_code:
 				#possibly a new section, or notes
 				if (course_file[j].startswith('Undergraduate Courses') or course_file[j].startswith('Cours de 1er cycle')):
 					current_heading = "u_grad"
-				else if (course_file[j].startswith('Graduate Courses') or course_file[j].startswith('Cours de 2e cycle')):
+				elif (course_file[j].startswith('Graduate Courses') or course_file[j].startswith('Cours de 2e cycle')):
 					current_heading = "grad"
 				else:
 					#notes, add to the notes section
 					if current_heading == "u_grad": 
 						undergrad_notes += course_file[j] + "\n"
-					else if current_heading == "grad":
+					elif current_heading == "grad":
 						grad_notes += course_file[j] + "\n"
 			else:
-				#class -> parse the class details and add to database
-				pass
+				# this is a class -> parse the class details and add to database
+				
+				# consistency check the line, every class should list it's credits, if not this might not be a class
+				if ("Œ" not in course_file[j]):
+					print("consistency error line " + str(j+1) + ": possibly not a class listing, could not find credit score")
+					print("                            " + course_file[j])
+					break
+				
+				line = course_file[j]
+				# definitely a class listing
+				# remove the subject code prefix and space
+				line = line[len(subject_code)+1:]
+				course_num = line[0:3] #course number is 3 digits
+				line = line[3:]
+				
+				
+			j += 1
 		
 		
 		# This old version couldn't handle the potential notes and sub section headings, but it could
