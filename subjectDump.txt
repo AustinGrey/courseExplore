@@ -1,0 +1,263 @@
+Abroad, Study Term, ABROD
+Accounting, ACCTG
+Agreement Formal (Registration), AGRMT
+Agricultural and Resource Economics, AREC
+Agricultural, Food and Nutritional Science, AFNS
+Agricultural, Life and Environmental Sciences, ALES
+American Sign Language, ASL
+Anatomy, ANAT
+Animal Science, AN SC
+Anthropology, ANTHR
+Arabic, ARAB
+Art History, ART H
+Art, ART
+Astronomy, ASTRO
+Augustana Faculty - Accounting, AUACC
+Augustana Faculty - Art, AUART
+Augustana Faculty - Biology, AUBIO
+Augustana Faculty - Chemistry, AUCHE
+Augustana Faculty - Classical Studies, AUCLA
+Augustana Faculty - Community Service Learning, AUCSL
+Augustana Faculty - Computing Science, AUCSC
+Augustana Faculty - Crime and Community, AUCRI
+Augustana Faculty - Drama, AUDRA
+Augustana Faculty - Economics, AUECO
+Augustana Faculty - Education Field Experience, AUEFX
+Augustana Faculty - Educational Computing, AUEDC
+Augustana Faculty - Educational Psychology, AUEPS
+Augustana Faculty - English for Academic Purposes, AUEAP
+Augustana Faculty - English, AUENG
+Augustana Faculty - Environmental Studies, AUENV
+Augustana Faculty - French, AUFRE
+Augustana Faculty - Geography, AUGEO
+Augustana Faculty - German, AUGER
+Augustana Faculty - Global and Development Studies, AUGDS
+Augustana Faculty - Greek, AUGRE
+Augustana Faculty - History, AUHIS
+Augustana Faculty - Indigenous Studies, AUIND
+Augustana Faculty - Interdisciplinary Studies, AUIDS
+Augustana Faculty - Language Studies, AULAN
+Augustana Faculty - Latin, AULAT
+Augustana Faculty - Management, AUMGT
+Augustana Faculty - Mathematics, AUMAT
+Augustana Faculty - Music, AUMUS
+Augustana Faculty - Philosophy, AUPHI
+Augustana Faculty - Physical Activity, AUPAC
+Augustana Faculty - Physical Education, AUPED
+Augustana Faculty - Physics, AUPHY
+Augustana Faculty - Political Studies, AUPOL
+Augustana Faculty - Psychology, AUPSY
+Augustana Faculty - Religion, AUREL
+Augustana Faculty - Scandinavian, AUSCA
+Augustana Faculty - Sociology, AUSOC
+Augustana Faculty - Spanish, AUSPA
+Augustana Faculty - Statistics, AUSTA
+Augustana Faculty - World Literatures, AULIT
+Biochemistry, BIOCH
+Bioinformatics, BIOIN
+Biology (Biological Sciences), BIOL
+Biomedical Engineering, BME
+Botany (Biological Sciences), BOT
+Business Economics, BUEC
+Business Law, B LAW
+Business, BUS
+Cell Biology, CELL
+Chemical Engineering, CH E
+Chemical and Materials Engineering, CME
+Chemistry, CHEM
+Chinese, CHINA
+Christian Theology at St Joseph’s College, CHRTC
+Christian Theology at St Stephen’s College, CHRTP
+Civil Engineering, CIV E
+Classics, CLASS
+Communication Sciences and Disorders, CSD
+Communications and Technology, COMM
+Community Engagement, MACE
+Community Service-Learning, CSL
+Comparative Literature, C LIT
+Computer Engineering, CMPE
+Computing Science, CMPUT
+Dance Activity, DAC
+Dance, DANCE
+Dental Hygiene, D HYG
+Dentistry, DDS
+Dentistry, DENT
+Dentistry/Medicine, DMED
+Design, DES
+Drama, DRAMA
+Earth and Atmospheric Sciences, EAS
+East Asian Studies, EASIA
+Economics, ECON
+Education - Career Technology Studies, EDCT
+Education - Elementary and Secondary, EDES
+Education - Elementary, EDEL
+Education - Field Experience, EDFX
+Education - Instructional Technology, EDIT
+Education - Policy Studies, EDPS
+Education - Psychology, EDPY
+Education - Secondary, EDSE
+Education, EDU
+Electrical and Computer Engineering, ECE
+Engineering Management, ENG M
+Engineering Physics, EN PH
+Engineering, Computer, ENCMP
+Engineering, General, ENGG
+English for Academic Purposes, EAP
+English, ENGL
+Entomology (Biological Sciences), ENT
+Environmental Engineering, ENV E
+Environmental and Conservation Sciences, ENCS
+Exchange Program, EXCH
+Extension, EXT
+FSJ - Administration, ADMI
+FSJ - Anatomie, ANATE
+FSJ - Anglais langue seconde, ALS
+FSJ - Anglais, ANGL
+FSJ - Anthropologie, ANTHE
+FSJ - Art dramatique, ADRAM
+FSJ - Biochimie, BIOCM
+FSJ - Biologie, BIOLE
+FSJ - Chimie, CHIM
+FSJ - Economie, ECONE
+FSJ - Education - Fondements, EDU F
+FSJ - Education - Methodologie et Curriculum, EDU M
+FSJ - Education - Psychologie, EDU P
+FSJ - Education - Stage, EDU S
+FSJ - Espagnol, ESPA
+FSJ - Etudes canadiennes, ETCAN
+FSJ - Etudes de la religion, ET RE
+FSJ - Etudes interdisciplinaires, ETIN
+FSJ - Français, FRANC
+FSJ - Histoire, HISTE
+FSJ - Immunologie, IMINE
+FSJ - Linguistique, LINGQ
+FSJ - Mathématiques, MATHQ
+FSJ - Maîtrise ès sciences de l’éducation, M EDU
+FSJ - Microbiologie, MICRE
+FSJ - Musique, MUSIQ
+FSJ - Philosophie, PHILE
+FSJ - Physiologie, PHYSE
+FSJ - Physique, PHYSQ
+FSJ - Psychologie, PSYCE
+FSJ - Science politique, SC PO
+FSJ - Sciences sociales, SCSOC
+FSJ - Sciences socio-politiques, SCSP
+FSJ - Sociologie, SOCIE
+FSJ - Statistique, STATQ
+Family Medicine, F MED
+Film Studies, FS
+Finance, FIN
+Forest Economics, FOREC
+French Language and Literature, FREN
+Gender and Social Justice, GSJ
+Genetics (Biological Sciences), GENET
+Geophysics, GEOPH
+German, GERM
+Greek, GREEK
+Health Education, HE ED
+Hebrew, HEBR
+Hindi, HINDI
+History of Art, Design, and Visual Culture, HADVC
+History, HIST
+Human Ecology, HECOL
+Human Geography and Planning, HGP
+Human Resource Management, HRM
+Humanities Computing, HUCO
+Immunology and Infection, IMIN
+Integrated Petroleum Geosciences, IPG
+Interdisciplinary Undergraduate and Graduate Courses, INT D
+Italian, ITAL
+Japanese, JAPAN
+Kinesiology, KIN
+Korean, KOREA
+Laboratory Medicine and Pathology, LABMP
+Latin American Studies, LA ST
+Latin, LATIN
+Law, LAW
+Library and Information Studies, LIS
+Linguistics, LING
+Maintaining Registration, M REG
+Management Information Systems, MIS
+Management Science, MGTSC
+Marine Science (Biological Sciences), MA SC
+Marketing, MARK
+Master of Internetworking, MINT
+Materials Engineering, MAT E
+Mathematical Physics, MA PH
+Mathematics, MATH
+Mechanical Engineering, MEC E
+Medical Genetics, MDGEN
+Medical Laboratory Science, MLSCI
+Medical Microbiology and Immunology, MMI
+Medicine, MED
+Microbiology (Biological Sciences), MICRB
+Middle Eastern and African Studies, MEAS
+Mining Engineering, MIN E
+Modern Languages and Cultural Studies, MLCS
+Multimedia, MM
+Music, MUSIC
+Nanotechnology and Nanoscience, NANO
+Native Studies, NS
+Neuroscience and Mental Health Institute, NEURO
+Norwegian, NORW
+Nursing, NURS
+Nutrition and Food Sciences, NU FS
+Nutrition, NUTR
+Obstetrics and Gynaecology, OB GY
+Occupational Therapy, OCCTH
+Oncology, ONCOL
+Operations Management, OM
+Ophthalmology, OPHTH
+Oral Biology, OBIOL
+Paediatrics, PAED
+Paleontology, PALEO
+Persian, PERS
+Petroleum Engineering, PET E
+Pharmacology, PMCOL
+Pharmacy, PHARM
+Philosophy, PHIL
+Physical Activity, PAC
+Physical Education, Recreation and Leisure Studies, PERLS
+Physical Therapy, PTHER
+Physics, PHYS
+Physiology, PHYSL
+Plant Science, PL SC
+Polish, POLSH
+Political Science, POL S
+Portuguese, PORT
+Postgraduate Dental Education, PGDE
+Postgraduate Medical Education, PGME
+Psychiatry, PSYCI
+Psychology, PSYCO
+Punjabi, PUNJ
+Radiation Therapy, RADTH
+Radiology and Diagnostic Imaging, RADDI
+Recreation and Leisure Studies, RLS
+Rehabilitation Medicine, REHAB
+Religious Studies, RELIG
+Renewable Resources, REN R
+Research, RSCH
+Rural Sociology, R SOC
+Russian, RUSS
+Scandinavian, SCAND
+School of Public Health, SPH
+Science, SCI
+Science, Technology, and Society, STS
+Sciences infirmières, SC INF
+Slavic and East European Studies, SLAV
+Sociology, SOC
+Spanish, SPAN
+Statistics, STAT
+Strategic Management and Organization, SMO
+Surgery, SURG
+Swedish, SWED
+Theatre Design, T DES
+Thesis, THES
+Ukrainian, UKR
+University, UNIV
+Urban and Regional Planning, PLAN
+Women’s and Gender Studies, WGS
+Work Experience, WKEXP
+Write (Creative Writing), WRITE
+Writing Studies, WRS
+Zoology (Biological Sciences), ZOOL
