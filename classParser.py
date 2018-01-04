@@ -1,6 +1,7 @@
 import codecs
 import sqlite3 as sql
 import os
+import re
 
 '''
 @TODO
@@ -27,6 +28,10 @@ subjects_file = [line.strip() for line in f]
 filename = os.path.join(os.path.dirname(__file__), 'database.db3')
 conn = sql.connect(filename)
 c = conn.cursor()
+
+test_set = set()
+
+prereq_list = []
 
 # Get all of the subjects, then courses, then add them to the database
 for i in range(0, len(course_file)):
@@ -76,7 +81,7 @@ for i in range(0, len(course_file)):
 			(subject_id, subject_name, subject_code, dept_id, "\n".join(subject_notes)))
 		# Keep track of the id as it now exists in the database
 		c.execute('SELECT id FROM subjects WHERE code=?', (subject_code,))
-		
+		subject_id = c.fetchone()[0]
 		
 		# scan the sub sections under the subject for course listings,
 		# Each subject usually has at least either undergraduate listings, or graduate listings as a section.
@@ -124,44 +129,124 @@ for i in range(0, len(course_file)):
 				
 				line = course_file[j]
 				# definitely a class listing
+				
 				# remove the subject code prefix and space
 				line = line[len(subject_code)+1:]
-				course_num = line[0:3] #course number is 3 digits
+				
+				# extract 3 digit course number
+				course_num = line[0:3] 
 				line = line[3:]
 				
+				# clean line from phrases that interfere with regex
+				if "e.g." in line: line = line.replace("e.g.", "eg")
+				if "i.e." in line: line = line.replace("i.e.", "ie")
 				
-			j += 1
-		
-		
-		# This old version couldn't handle the potential notes and sub section headings, but it could
-		# handle checking for poorly formatted input where pre-reqs were accidently listed as classes for a subject
-		'''
-		undergrad_notes = ""
-		if (course_file[j].startswith('Undergraduate Courses') 
-			or course_file[j].startswith('Cours de 1er cycle')):
-			j += 1
-			note_scanning = True
-			# Get Undergrad Courses, continue where we left off scanning notes
-			while (not course_file[j].startswith('Graduate Courses')
-				and not course_file[j].startswith('Cours de 2e cycle')
-				and not course_file[j].startswith('#')):
-				
-				line_code = course_file[j][0:len(subject_code)]
-				
-				# Common error, a note or other sentence starting with a course code is on the wrong line
-				# Check for course code consistency
-				# @TODO there is a bug here, if an incorrect course code is right after the notes, it will be included in the notes
-				if line_code != subject_code:
-					if note_scanning:
-						undergrad_notes += course_file[j]
-						j = j+1
-						continue
-					print("consistency error line " + str(j+1) + ": Subject " + subject_code + " has line with code " + line_code)
-					break
+				# extract the prerequisites statement
+				match = re.search("Prerequisites?:[^.]*\.", line)
+				if match:
+					prereq_string = match.group(0)
+					line = line.replace(prereq_string, "")
 				else:
-					note_scanning = False
-				j += 1
-		'''
+					prereq_string = None
+				
+				# extract the corequsites statement
+				match = re.search("[^.]*Corequisites?:[^.]*\.", line)
+				if match:
+					coreq_string = match.group(0)
+					line = line.replace(coreq_string, "")
+				else:
+					coreq_string = None
+					
+				# extract the credit number
+				match = re.search("Œ[0-9.-]*", line)
+				if match:
+					credit_string = match.group(0)
+					line = line.replace(credit_string, "") # remove the string from the line, then clean it up
+					credit_string = credit_string.replace("(", "")
+					credit_string = credit_string.replace(")", "")
+					credit_string = credit_string.replace("Œ", "")
+				else:
+					print("FATAL ERR: No credit amount found for line " + str(j+1) + " when one was expected")
+					break
+					
+				# extract the fee index
+				match = re.search("\(fi[^(]*\)|(\(variable\))", line)
+				if match:
+					fi_string = match.group(0)
+					line = line.replace(fi_string, "")
+					fi_string = fi_string.replace("(", "")
+					fi_string = fi_string.replace(")", "")
+					fi_string = fi_string.replace("fi", "")
+					fi_string.strip()
+				else:
+					print("ERR: No fee index found for line " + str(j+1) + " when one was expected")
+				
+				# extract the open limited and open key phrases, order here matters between these two
+				match = re.search("=OPEN-LIMITED", line)
+				if match:
+					open_limited = True
+					line = line.replace("=OPEN-LIMITED", "")
+				else:
+					open_limited = False
+					
+				match = re.search("=OPEN", line)
+				if match:
+					open = True
+					line = line.replace("=OPEN", "")
+				else:
+					open = False
+				
+				# extract the course name
+				# regex looks for all characters before the first left parenthesis, there are some exceptions for classes
+				# that have the bad habit of parenthesising their long names
+				# @TODO seems like there are too many exceptions to be sustainable for a future usage of the tool, is there another way to detect the name?
+				match = re.search("^[^(]*(\(CALL\)|\(TESL\)|\(bhakti\)|\(Track and Field\)|\(#1\)|\(#2\)|\(1600-1815\)|\(Ages 5 - 12\)|\(Canada\)|\(Capstone Course\)|\(Chant\)|\(Classical\)|\(Cornerstone Course\)|\(Course Based Masters\)|\(Course-based Masters\)|\(Cuba\)|\(Dental\)|\(Enriched\)|\(Fast Pitch\)|\(For Further Study\)|\(Greece\)|\(Hellenistic\)|\(MEMS\)|\(MEMS\/NEMS\)|\(Mechanics\)|\(Migration and Identity\)|\(Post\)|\(Printemps\/Eté, 0-3L-0\)|\(Re\)|\(Wave Motion, Sound, Heat, and Optics\)|\(ou la chimie durable\)|\(s\))?[^(]*", line)
+				if match:
+					name_string = match.group(0)
+					line = line.replace(name_string, "")
+				else:
+					print("ERR: No case name found for line " + str(j+1) + " when one was expected")
+					
+				# extract the time commitment string
+				match = re.search("^\([^\)]*\)", line)
+				if match:
+					times_string = match.group(0)
+					line = line.replace(times_string, "")
+				else:
+					print("ERR: No time commitment string found for line " + str(j+1) + " when one was expected")
+				
+				# usually this leaves a period and leading space in front of the notes, remove them
+				if line[0:2] == ". ": line = line[2:]
+				
+				# add the class to the database
+				# first check if it already exists
+				c.execute('SELECT id FROM courses WHERE subject=? and number=?', (subject_id,course_num))
+				course_id = c.fetchone()
+				course_id = course_id[0] if course_id != None else None
+				# Insert
+				c.execute('''
+				INSERT OR REPLACE INTO courses 
+				(id, subject, number, credits, fi, open_study, open_study_limited, is_undergrad, is_grad) 
+				VALUES (?,?,?,?,?,?,?,?,?)''', 
+				(course_id, subject_id, course_num, 
+				credit_string, fi_string, open, open_limited, 
+				True if current_heading == "u_grad" else False,
+				True if current_heading == "grad" else False,))
+				
+				
+				# parse the pre and co reqs, add to a list that will be added to the database later,
+				# after all the classes themselves are added, to avoid foreign key contraint issues.
+				
+				
+				
+				
+			j += 1
 
-
+			
+test_list = list(test_set)
+test_list.sort()
+for line in test_list:
+	print(line)
+	
+	
 conn.commit()
