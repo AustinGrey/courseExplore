@@ -255,18 +255,26 @@ for i in range(0, len(course_file)):
 				
 				if (prereq_string is not None):
 					# extract the numbers codes, and the subject codes
-					num_matches = re.finditer("[0-9]{3}", prereq_string)
+					num_matches = re.finditer("(?<=[^0-9])[0-9]{3}(?=[^0-9])", prereq_string) #strictly 3 digit numbers, avoids extracting from years
 					sub_matches = re.finditer("(ABROD|ACCTG|AGRMT|AREC|AFNS|ALES|ASL|ANAT|AN SC|ANTHR|ARAB|ART H|ART|ASTRO|AUACC|AUART|AUBIO|AUCHE|AUCLA|AUCSL|AUCSC|AUCRI|AUDRA|AUECO|AUEFX|AUEDC|AUEPS|AUEAP|AUENG|AUENV|AUFRE|AUGEO|AUGER|AUGDS|AUGRE|AUHIS|AUIND|AUIDS|AULAN|AULAT|AUMGT|AUMAT|AUMUS|AUPHI|AUPAC|AUPED|AUPHY|AUPOL|AUPSY|AUREL|AUSCA|AUSOC|AUSPA|AUSTA|AULIT|BIOCH|BIOIN|BIOL|BME|BOT|BUEC|B LAW|BUS|CELL|CH E|CME|CHEM|CHINA|CHRTC|CHRTP|CIV E|CLASS|CSD|COMM|MACE|CSL|C LIT|CMPE|CMPUT|DAC|DANCE|D HYG|DDS|DENT|DMED|DES|DRAMA|EAS|EASIA|ECON|EDCT|EDES|EDEL|EDFX|EDIT|EDPS|EDPY|EDSE|EDU|ECE|ENG M|EN PH|ENCMP|ENGG|EAP|ENGL|ENT|ENV E|ENCS|EXCH|EXT|ADMI|ANATE|ALS|ANGL|ANTHE|ADRAM|BIOCM|BIOLE|CHIM|ECONE|EDU F|EDU M|EDU P|EDU S|ESPA|ETCAN|ET RE|ETIN|FRANC|HISTE|IMINE|LINGQ|MATHQ|M EDU|MICRE|MUSIQ|PHILE|PHYSE|PHYSQ|PSYCE|SC PO|SCSOC|SCSP|SOCIE|STATQ|F MED|FS|FIN|FOREC|FREN|GSJ|GENET|GEOPH|GERM|GREEK|HE ED|HEBR|HINDI|HADVC|HIST|HECOL|HGP|HRM|HUCO|IMIN|IPG|INT D|ITAL|JAPAN|KIN|KOREA|LABMP|LA ST|LATIN|LAW|LIS|LING|M REG|MIS|MGTSC|MA SC|MARK|MINT|MAT E|MA PH|MATH|MEC E|MDGEN|MLSCI|MMI|MED|MICRB|MEAS|MIN E|MLCS|MM|MUSIC|NANO|NS|NEURO|NORW|NURS|NU FS|NUTR|OB GY|OCCTH|ONCOL|OM|OPHTH|OBIOL|PAED|PALEO|PERS|PET E|PMCOL|PHARM|PHIL|PAC|PERLS|PTHER|PHYS|PHYSL|PL SC|POLSH|POL S|PORT|PGDE|PGME|PSYCI|PSYCO|PUNJ|RADTH|RADDI|RLS|REHAB|RELIG|REN R|RSCH|R SOC|RUSS|SCAND|SPH|SCI|STS|SC INF|SLAV|SOC|SPAN|STAT|SMO|SURG|SWED|T DES|THES|UKR|UNIV|PLAN|WGS|WKEXP|WRITE|WRS|ZOOL)", prereq_string)
 					
-					num_list = [(match, match.start()) for match in num_matches]
-					sub_list = [(match, match.start()) for match in sub_matches]
+					num_list = [(match.group(0), match.start()) for match in num_matches]
+					sub_list = [(match.group(0), match.start()) for match in sub_matches]
 					
-					num = 0
-					sub = 0
-					while(num < len(num_list) and sub < len(sub_list)):
-						num += 1
-						sub += 1
-				###################FIGURE FROM HERE
+					parse_list = num_list + sub_list
+					parse_list.sort(key=lambda x: x[1]) # sort the list by incidence in the string
+					
+					# iterate over, make note of the last seen subject, add to number
+					last_sub = None
+					for item in parse_list:
+						#check first char to see if a number or a subject
+						if item[0][0] in ['0','1','2','3','4','5','6','7','8','9'] and last_sub is not None:
+							# this is a number, create relation tuple
+							# basic course subject, basic course number, adv sub, adv number, is co-req
+							prereq_list.append( (last_sub, item[0], subject_code, course_num, 0) )
+						else:
+							# subject
+							last_sub = item[0]
 				
 				
 				
@@ -274,11 +282,54 @@ for i in range(0, len(course_file)):
 				
 			j += 1
 
+#Transform the prereqs list from names into ids
+transformed_prereq = []
+for prereq in prereq_list:
+	basic = None
+	adv = None
+	coreq = 0
+	
+	# get basic course subject id
+	c.execute('SELECT id FROM subjects WHERE code=?', (prereq[0],))
+	sub_id = c.fetchone()
+	sub_id = sub_id[0] if sub_id != None else None
+	
+	# get basic course id
+	c.execute('SELECT id FROM courses WHERE subject=? and number=?', (sub_id,prereq[1]))
+	basic = c.fetchone()
+	basic = basic[0] if basic != None else None
+	
+	# get adv course subject id
+	c.execute('SELECT id FROM subjects WHERE code=?', (prereq[2],))
+	sub_id = c.fetchone()
+	sub_id = sub_id[0] if sub_id != None else None
+	
+	# get adv course id
+	c.execute('SELECT id FROM courses WHERE subject=? and number=?', (sub_id,prereq[3]))
+	adv = c.fetchone()
+	adv = adv[0] if adv != None else None
+	
+	# some listings include older courses that we have no info on, just ignore those
+	if basic is not None and adv is not None:
+		transformed_prereq.append((basic, adv, coreq))
+	else:
+		#print("could not find both classes, (basic, adv) was (", basic, ",", adv,")")
+		pass
+		
+for prereq in transformed_prereq:
+	# add the course relation to the database
+	c.execute('''
+	INSERT OR REPLACE INTO prerequisites 
+	(basic_course, advanced_course, coreq_able) 
+	VALUES (?,?,?)''', 
+	(prereq[0], prereq[1], prereq[2]))
+
+
+	
 			
 test_list = list(test_set)
 test_list.sort()
 for line in test_list:
 	print(line)
-	
-	
+
 conn.commit()
