@@ -13,6 +13,12 @@ course_filename = "courseDump.txt"
 subject_filename = "subjectDump.txt"
 
 
+# hard coded list of subject codes for some pruning later,
+# @TODO build this algorithmically from the subjects
+subs_list = [
+'ABROD', 'ACCTG', 'AGRMT', 'AREC', 'AFNS', 'ALES', 'ASL', 'ANAT', 'AN SC', 'ANTHR', 'ARAB', 'ART H', 'ART', 'ASTRO', 'AUACC', 'AUART', 'AUBIO', 'AUCHE', 'AUCLA', 'AUCSL', 'AUCSC', 'AUCRI', 'AUDRA', 'AUECO', 'AUEFX', 'AUEDC', 'AUEPS', 'AUEAP', 'AUENG', 'AUENV', 'AUFRE', 'AUGEO', 'AUGER', 'AUGDS', 'AUGRE', 'AUHIS', 'AUIND', 'AUIDS', 'AULAN', 'AULAT', 'AUMGT', 'AUMAT', 'AUMUS', 'AUPHI', 'AUPAC', 'AUPED', 'AUPHY', 'AUPOL', 'AUPSY', 'AUREL', 'AUSCA', 'AUSOC', 'AUSPA', 'AUSTA', 'AULIT', 'BIOCH', 'BIOIN', 'BIOL', 'BME', 'BOT', 'BUEC', 'B LAW', 'BUS', 'CELL', 'CH E', 'CME', 'CHEM', 'CHINA', 'CHRTC', 'CHRTP', 'CIV E', 'CLASS', 'CSD', 'COMM', 'MACE', 'CSL', 'C LIT', 'CMPE', 'CMPUT', 'DAC', 'DANCE', 'D HYG', 'DDS', 'DENT', 'DMED', 'DES', 'DRAMA', 'EAS', 'EASIA', 'ECON', 'EDCT', 'EDES', 'EDEL', 'EDFX', 'EDIT', 'EDPS', 'EDPY', 'EDSE', 'EDU', 'ECE', 'ENG M', 'EN PH', 'ENCMP', 'ENGG', 'EAP', 'ENGL', 'ENT', 'ENV E', 'ENCS', 'EXCH', 'EXT', 'ADMI', 'ANATE', 'ALS', 'ANGL', 'ANTHE', 'ADRAM', 'BIOCM', 'BIOLE', 'CHIM', 'ECONE', 'EDU F', 'EDU M', 'EDU P', 'EDU S', 'ESPA', 'ETCAN', 'ET RE', 'ETIN', 'FRANC', 'HISTE', 'IMINE', 'LINGQ', 'MATHQ', 'M EDU', 'MICRE', 'MUSIQ', 'PHILE', 'PHYSE', 'PHYSQ', 'PSYCE', 'SC PO', 'SCSOC', 'SCSP', 'SOCIE', 'STATQ', 'F MED', 'FS', 'FIN', 'FOREC', 'FREN', 'GSJ', 'GENET', 'GEOPH', 'GERM', 'GREEK', 'HE ED', 'HEBR', 'HINDI', 'HADVC', 'HIST', 'HECOL', 'HGP', 'HRM', 'HUCO', 'IMIN', 'IPG', 'INT D', 'ITAL', 'JAPAN', 'KIN', 'KOREA', 'LABMP', 'LA ST', 'LATIN', 'LAW', 'LIS', 'LING', 'M REG', 'MIS', 'MGTSC', 'MA SC', 'MARK', 'MINT', 'MAT E', 'MA PH', 'MATH', 'MEC E', 'MDGEN', 'MLSCI', 'MMI', 'MED', 'MICRB', 'MEAS', 'MIN E', 'MLCS', 'MM', 'MUSIC', 'NANO', 'NS', 'NEURO', 'NORW', 'NURS', 'NU FS', 'NUTR', 'OB GY', 'OCCTH', 'ONCOL', 'OM', 'OPHTH', 'OBIOL', 'PAED', 'PALEO', 'PERS', 'PET E', 'PMCOL', 'PHARM', 'PHIL', 'PAC', 'PERLS', 'PTHER', 'PHYS', 'PHYSL', 'PL SC', 'POLSH', 'POL S', 'PORT', 'PGDE', 'PGME', 'PSYCI', 'PSYCO', 'PUNJ', 'RADTH', 'RADDI', 'RLS', 'REHAB', 'RELIG', 'REN R', 'RSCH', 'R SOC', 'RUSS', 'SCAND', 'SPH', 'SCI', 'STS', 'SC INF', 'SLAV', 'SOC', 'SPAN', 'STAT', 'SMO', 'SURG', 'SWED', 'T DES', 'THES', 'UKR', 'UNIV', 'PLAN', 'WGS', 'WKEXP', 'WRITE', 'WRS', 'ZOOL'
+]
+
 print("Beginning to Parse Class Listings")
 
 
@@ -146,6 +152,8 @@ for i in range(0, len(course_file)):
 				if match:
 					prereq_string = match.group(0)
 					line = line.replace(prereq_string, "")
+					prereq_string = prereq_string.replace("Prerequisite: ", "")
+					prereq_string = prereq_string.replace("Prerequisites: ", "")
 				else:
 					prereq_string = None
 				
@@ -235,7 +243,31 @@ for i in range(0, len(course_file)):
 				
 				
 				# parse the pre and co reqs, add to a list that will be added to the database later,
-				# after all the classes themselves are added, to avoid foreign key contraint issues.
+				# after all the classes themselves are added, to avoid foreign key constraint issues.
+				
+				# expand the prereqs string, 'naked' numbers should recieve their course code
+				# e.g. 				'MATH 114 or 115, SCI 133, 156, and 167.'
+				# should become 	'MATH 114 or MATH 115, SCI 133, SCI 156, and SCI 167.'
+				# Lazy and bad solution
+				# 1. Get a list of all 3 digit numbers in the string
+				# 2. Get a list of all the subject codes in the string
+				# 3. Iterate over the course numbers, and match it with the closest preceeding subject code
+				
+				if (prereq_string is not None):
+					# extract the numbers codes, and the subject codes
+					num_matches = re.finditer("[0-9]{3}", prereq_string)
+					sub_matches = re.finditer("(ABROD|ACCTG|AGRMT|AREC|AFNS|ALES|ASL|ANAT|AN SC|ANTHR|ARAB|ART H|ART|ASTRO|AUACC|AUART|AUBIO|AUCHE|AUCLA|AUCSL|AUCSC|AUCRI|AUDRA|AUECO|AUEFX|AUEDC|AUEPS|AUEAP|AUENG|AUENV|AUFRE|AUGEO|AUGER|AUGDS|AUGRE|AUHIS|AUIND|AUIDS|AULAN|AULAT|AUMGT|AUMAT|AUMUS|AUPHI|AUPAC|AUPED|AUPHY|AUPOL|AUPSY|AUREL|AUSCA|AUSOC|AUSPA|AUSTA|AULIT|BIOCH|BIOIN|BIOL|BME|BOT|BUEC|B LAW|BUS|CELL|CH E|CME|CHEM|CHINA|CHRTC|CHRTP|CIV E|CLASS|CSD|COMM|MACE|CSL|C LIT|CMPE|CMPUT|DAC|DANCE|D HYG|DDS|DENT|DMED|DES|DRAMA|EAS|EASIA|ECON|EDCT|EDES|EDEL|EDFX|EDIT|EDPS|EDPY|EDSE|EDU|ECE|ENG M|EN PH|ENCMP|ENGG|EAP|ENGL|ENT|ENV E|ENCS|EXCH|EXT|ADMI|ANATE|ALS|ANGL|ANTHE|ADRAM|BIOCM|BIOLE|CHIM|ECONE|EDU F|EDU M|EDU P|EDU S|ESPA|ETCAN|ET RE|ETIN|FRANC|HISTE|IMINE|LINGQ|MATHQ|M EDU|MICRE|MUSIQ|PHILE|PHYSE|PHYSQ|PSYCE|SC PO|SCSOC|SCSP|SOCIE|STATQ|F MED|FS|FIN|FOREC|FREN|GSJ|GENET|GEOPH|GERM|GREEK|HE ED|HEBR|HINDI|HADVC|HIST|HECOL|HGP|HRM|HUCO|IMIN|IPG|INT D|ITAL|JAPAN|KIN|KOREA|LABMP|LA ST|LATIN|LAW|LIS|LING|M REG|MIS|MGTSC|MA SC|MARK|MINT|MAT E|MA PH|MATH|MEC E|MDGEN|MLSCI|MMI|MED|MICRB|MEAS|MIN E|MLCS|MM|MUSIC|NANO|NS|NEURO|NORW|NURS|NU FS|NUTR|OB GY|OCCTH|ONCOL|OM|OPHTH|OBIOL|PAED|PALEO|PERS|PET E|PMCOL|PHARM|PHIL|PAC|PERLS|PTHER|PHYS|PHYSL|PL SC|POLSH|POL S|PORT|PGDE|PGME|PSYCI|PSYCO|PUNJ|RADTH|RADDI|RLS|REHAB|RELIG|REN R|RSCH|R SOC|RUSS|SCAND|SPH|SCI|STS|SC INF|SLAV|SOC|SPAN|STAT|SMO|SURG|SWED|T DES|THES|UKR|UNIV|PLAN|WGS|WKEXP|WRITE|WRS|ZOOL)", prereq_string)
+					
+					num_list = [(match, match.start()) for match in num_matches]
+					sub_list = [(match, match.start()) for match in sub_matches]
+					
+					num = 0
+					sub = 0
+					while(num < len(num_list) and sub < len(sub_list)):
+						num += 1
+						sub += 1
+				###################FIGURE FROM HERE
+				
 				
 				
 				
